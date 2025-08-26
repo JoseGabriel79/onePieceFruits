@@ -43,7 +43,10 @@ export default function App() {
                 <Text>
                   Nome comum:
                   {item.roman_name}
-
+                </Text>
+                <Text>
+                  Descrição:
+                  {item.description}
                 </Text>
               </View>
             </View>
@@ -68,8 +71,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   img: {
-    width: 80,
-    height: 50,
+    width: 100,
+    height: 100,
     resizeMode: 'contain',
     backgroundColor: '#fff',
     marginBottom: 20,
@@ -82,6 +85,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#000',
+    width: 400,
+    padding: 10,
   },
   title: {
     fontSize: 30,
