@@ -16,19 +16,14 @@ export default function App() {
   }, []);
 
   function createTemplateFruit(){
-    let itemChoosen = 0
-    
-  }
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Fruits</Text>
-
-      <FlatList
+    let itemChoosen = 9
+    return(
+    <FlatList
         data={fruits}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           var source;
-          if (item.filename == item.technicalFile) {
+          if(item.id == itemChoosen){
+            if (item.filename == item.technicalFile) {
             source = require('./maca.png');
           } else {
             source = { uri: item.filename };
@@ -54,7 +49,15 @@ export default function App() {
             </View>
           )
         }
-        } />
+          }
+          
+       } />)
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Fruits</Text>
+      {createTemplateFruit()}
     </View>
   );
 }
