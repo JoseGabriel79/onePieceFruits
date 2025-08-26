@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Image, ScrollView } from 'react-native';
+import { Button } from 'react-native-web';
 // import Entypo from '@expo/vector-icons/Entypo';
 
 export default function App() {
   const [fruits, setFruits] = useState([]);
+  const [pagina, setPagina] = useState('config');
+
+  function HomePage() {
+    return <View><Text>Home Page</Text></View>;
+  }
+  function ConfigPage() {
+    return <View><Text>Config Page</Text></View>;
+  }
 
   async function fetchFruits() {
     const response = await fetch('https://api.api-onepiece.com/v2/fruits/en');
@@ -15,50 +24,55 @@ export default function App() {
     fetchFruits();
   }, []);
 
-  function createTemplateFruit(){
-    let itemChoosen = 9
-    return(
-    <FlatList
+  function createTemplateFruit() {
+    let itemChoosen = 6
+    return (
+      <FlatList
         data={fruits}
-        renderItem={({ item, index }) => {
+        renderItem={({ item }) => {
           var source;
-          if(item.id == itemChoosen){
+          if (item.id == itemChoosen) {
             if (item.filename == item.technicalFile) {
-            source = require('./maca.png');
-          } else {
-            source = { uri: item.filename };
-          }
-          console.log(source);
-          return (
-            <View style={styles.boxFruit}>
+              source = require('./maca.png');
+            } else {
+              source = { uri: item.filename };
+            }
 
-              <Image style={styles.img}
-                source={source}
-              />
-              <View>
-                <Text>
-                  Nome:
-                  {item.name}
-                </Text>
-                <Text>
-                  Nome comum:
-                  {item.roman_name}
-                </Text>
-                <Text>
-                  Descrição:
-                  {item.description}
-                </Text>
+            return (
+              <View style={styles.boxFruit}>
+
+                <Image style={styles.img}
+                  source={source}
+                />
+                <View>
+                  <Text>
+                    Nome:
+                    {item.name}
+                  </Text>
+                  <Text>
+                    Nome comum:
+                    {item.roman_name}
+                  </Text>
+                  <Text>
+                    Descrição:
+                    {item.description}
+                  </Text>
+                </View>
               </View>
-            </View>
-          )
-        }
+            )
           }
-          
-       } />)
+        }
+
+        } />)
   }
 
   return (
     <View style={styles.container}>
+      <Button title='Ir para home' onPress={() => setPagina('home')} />
+      <Button title='Ir para config' onPress={() => setPagina('config')} />
+      {
+        pagina == 'home'?<HomePage/>:<ConfigPage/>
+      }
       <Text style={styles.title}>Fruits</Text>
       {createTemplateFruit()}
     </View>
