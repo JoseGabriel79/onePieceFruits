@@ -1,0 +1,31 @@
+Gerar APK com EAS Build (Expo)
+
+Instale o EAS CLI globalmente:
+
+npm install -g eas-cli
+
+
+Faça login na sua conta Expo:
+
+eas login
+
+
+(Crie uma conta em https://expo.dev
+ se precisar)
+
+Configure o projeto para EAS Build:
+
+eas build:configure
+
+
+Inicie o build Android:
+
+eas build -p android --profile production
+
+
+Baixe o APK:
+
+Aguarde o build terminar.
+
+Link para download será mostrado no terminal ou acesse:
+https://expo.dev/accounts/SEU_USUARIO/builds
