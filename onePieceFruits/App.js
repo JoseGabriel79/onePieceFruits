@@ -1,8 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, ScrollView } from 'react-native';
-// import Entypo from '@expo/vector-icons/Entypo';
+import { Text, View, StyleSheet, FlatList, ScrollView, Button, Image, Alert } from 'react-native';
 
 export default function App() {
+  const [pagina, setPagina] = useState('character')
+  const [characters, setCharacters] = useState([]);
+  const [selectedFruitName, setSelectedFruitName] = useState(null);
+
+  async function fetchCharacters() {
+    const response = await fetch(
+      'https://api.api-onepiece.com/v2/characters/en'
+    );
+    const character = await response.json();
+    setCharacters(character);
+  }
+
+  fetchCharacters();
+
   const [fruits, setFruits] = useState([]);
 
   async function fetchFruits() {
@@ -13,62 +26,150 @@ export default function App() {
 
   useEffect(() => {
     fetchFruits();
+    fetchCharacters();
   }, []);
 
-  function createTemplateFruit(){
-    let itemChoosen = 9
-    return(
-    <FlatList
-        data={fruits}
-        renderItem={({ item, index }) => {
-          var source;
-          if(item.id == itemChoosen){
-            if (item.filename == item.technicalFile) {
-            source = require('./maca.png');
-          } else {
-            source = { uri: item.filename };
-          }
-          console.log(source);
-          return (
-            <View style={styles.boxFruit}>
 
-              <Image style={styles.img}
-                source={source}
-              />
-              <View>
-                <Text>
-                  Nome:
-                  {item.name}
-                </Text>
-                <Text>
-                  Nome comum:
-                  {item.roman_name}
-                </Text>
-                <Text>
-                  Descrição:
-                  {item.description}
-                </Text>
+
+  function fruitsOnePiece() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Fruits</Text>
+        <Button title="Voltar" onPress={() => setPagina('character')} />
+        <FlatList
+          data={fruits}
+          renderItem={({ item }) => {
+            var source;
+            if (item.filename == item.technicalFile) {
+              source = require('./maca.png');
+            } else {
+              source = { uri: item.filename };
+            }
+            return (
+              <View style={styles.boxFruit}>
+
+                <Image style={styles.img}
+                  source={source}
+                />
+                <View>
+                  <Text>
+                    Nome:
+                    {item.name}
+                  </Text>
+                  <Text>
+                    Nome comum:
+                    {item.roman_name}
+
+                  </Text>
+                </View>
               </View>
-            </View>
-          )
-        }
+            )
           }
-          
-       } />)
+          } />
+      </View>
+    )
+  };
+
+  function unicFruit(itemChoosen) {
+    const item = fruits.find(f => f.name === itemChoosen);
+    if (!item) return null;
+
+    const source =
+      item.filename === item.technicalFile
+        ? require('./maca.png')
+        : { uri: item.filename };
+
+
+
+    return (
+      <View style={styles.boxFruit}>
+
+        <Image style={styles.img}
+          source={source}
+        />
+        <View>
+          <Text>
+            Nome:
+            {item.name}
+          </Text>
+          <Text>
+            Nome comum:
+            {item.roman_name}
+          </Text>
+          <Text>
+            Descrição:
+            {item.description}
+          </Text>
+        </View>
+        <Button title="Voltar" onPress={() => setPagina('character')} />
+      </View>
+    )
   }
+  function charactersOnePiece() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Lista de Personagens de One Piece</Text>
+        <Button title='Ver frutas' onPress={() => setPagina('fruits')} />
+
+        <FlatList data={characters} renderItem={({ item }) =>
+          <View style={styles.containercard}>
+            <Text>{item.name}</Text>
+            <Text>{item.bounty
+              ? `Recompensa: ${item.bounty}`
+              : `Sem Recompensa`}</Text>
+            <Text>{item.crew && item.crew.name
+              ? `Tripulação:${item.crew.name}`
+              : `Sem Tripulação`}</Text>
+            <Text>{item.crew && item.crew.total_prime
+              ? `Recompensa da Tripulação: ${item.crew.total_prime}`
+              : "Sem recompensas"}</Text>
+            <Button
+              title={item.fruit ? item.fruit.name : "Sem fruta"}
+              onPress={() => {
+                if (item.fruit) {
+                  setSelectedFruitName(item.fruit.name);
+                  setPagina('unicFruit');
+                } else {
+                  console.log('Alerta de personagem sem fruta');
+                  Alert.alert('Sem fruta', `${item.name} não possui uma fruta.`);
+                }
+              }} />
+
+          </View>
+        }
+        />
+      </View>
+    )
+
+  }
+  useEffect(() => {
+  Alert.alert('Teste', 'Se você está vendo isso, Alert está funcionando!');
+}, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Fruits</Text>
-      {createTemplateFruit()}
+      {pagina === 'character'
+        ? charactersOnePiece()
+        : (pagina === 'fruits'
+          ? fruitsOnePiece()
+          : unicFruit(selectedFruitName)
+
+        )
+
+      }
     </View>
   );
 }
+
+
+
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#fff',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   img: {
     width: 100,
@@ -88,9 +189,15 @@ const styles = StyleSheet.create({
     width: 400,
     padding: 10,
   },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
+  containercard: {
     marginBottom: 20,
+    backgroundColor: 'rgba(209, 209, 209, 1)',
+    padding: 15,
+    borderRadius: 8
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 25
   }
-})
+});
